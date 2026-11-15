@@ -3350,6 +3350,16 @@ private:
         return true;
       }
     }
+    // SbDroid direct launch: its Play button drops this flag; consume it and
+    // boot straight into the game, skipping the oSBM launcher UI.
+    {
+      auto directFlag = File::relativeTo(m_storageRoot, "sbdroid_direct_launch.flag");
+      if (File::isFile(directFlag)) {
+        try { File::remove(directFlag); } catch (std::exception const&) {}
+        if (!state.packedPakPath.empty() && File::isFile(state.packedPakPath))
+          return true;
+      }
+    }
     syncWindowMetrics(false);
     processWindowEvents();
     syncWindowMetrics(false);
