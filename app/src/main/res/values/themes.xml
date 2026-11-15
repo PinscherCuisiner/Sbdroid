@@ -1,0 +1,3 @@
+<resources>
+    <style name="Theme.SbDroid" parent="android:Theme.Material.NoActionBar" />
+</resources>
