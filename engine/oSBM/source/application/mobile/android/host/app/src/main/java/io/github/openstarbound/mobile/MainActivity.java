@@ -175,6 +175,11 @@ public final class MainActivity extends SDLActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE);
         super.onCreate(savedInstanceState);
         applyStableDisplayConfig();
+        try {
+            com.example.sbdroid.controls.OverlayHost.attach(this);
+        } catch (Throwable t) {
+            Log.e(TAG, "SbDroid overlay failed", t);
+        }
 
         if (Build.VERSION.SDK_INT >= 33) {
             mBackCallback = () -> {

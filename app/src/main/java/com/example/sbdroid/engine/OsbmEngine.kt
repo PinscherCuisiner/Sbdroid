@@ -25,6 +25,12 @@ class OsbmEngine(private val ctx: Context) : GameEngine {
         val mods = File(root, "mods").also { it.mkdirs() }
         mods.listFiles()?.filter { it.name.matches(Regex("\\d{3}_.*\\.pak")) }?.forEach { it.delete() }
         config.modPaks.forEach { it.copyTo(File(mods, it.name), overwrite = true) }
+        // SbDroid draws the controls: turn oSBM's own touch overlay off (direct-tap gestures stay on)
+        val cfg = File(root, "mobile_launcher.json")
+        val json = runCatching { org.json.JSONObject(cfg.readText()) }.getOrElse { org.json.JSONObject() }
+        val touch = json.optJSONObject("touch") ?: org.json.JSONObject().also { json.put("touch", it) }
+        touch.put("enabled", false)
+        cfg.writeText(json.toString(2))
         File(root, "sbdroid_direct_launch.flag").writeText("1")
         ctx.startActivity(
             Intent().setClassName(ctx, "io.github.openstarbound.mobile.MainActivity")

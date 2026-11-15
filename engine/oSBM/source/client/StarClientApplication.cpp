@@ -1644,6 +1644,27 @@ void ClientApplication::updateRunning(float dt) {
     auto& app = appController();
     auto worldClient = m_universeClient->worldClient();
 
+#ifdef STAR_SYSTEM_ANDROID
+    // SbDroid emote wheel: its overlay drops <app files>/sbdroid_emote.txt with an emote name.
+    {
+      static int s_emoteTick = 0;
+      if ((++s_emoteTick % 6) == 0) {
+        String emoteFlag = "/storage/emulated/0/Android/data/com.example.sbdroid/files/sbdroid_emote.txt";
+        if (File::isFile(emoteFlag)) {
+          String emoteName;
+          try { emoteName = File::readFileString(emoteFlag).trim(); } catch (std::exception const&) {}
+          try { File::remove(emoteFlag); } catch (std::exception const&) {}
+          if (!emoteName.empty()) {
+            try {
+              if (auto mainPlayer = m_universeClient->mainPlayer())
+                mainPlayer->playEmote(HumanoidEmoteNames.getLeft(emoteName));
+            } catch (std::exception const&) {}
+          }
+        }
+      }
+    }
+#endif
+
 #ifdef STAR_SYSTEM_SWITCH
     // Catch-up frames call update() more than once before the next render():
     // a sim tick deferred by the previous update must run NOW, before this
